@@ -1,2 +1,0 @@
-
-            if entrada_usuario: 
