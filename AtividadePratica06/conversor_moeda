@@ -1,0 +1,40 @@
+import requests
+
+def consultar_cotacao_moeda():
+    moeda_desejada = input("Digite o código da moeda (ex: USD, EUR, GBP): ").strip().upper()
+
+    if not moeda_desejada:
+        print("Nenhum código de moeda foi informado.")
+        return
+
+    par_moeda_api = f"{moeda_desejada}-BRL"
+    chave_json = f"{moeda_desejada}BRL"
+    
+    url = f"https://economia.awesomeapi.com.br/json/last/{par_moeda_api}"
+
+    try:
+        resposta = requests.get(url)
+        resposta.raise_for_status() 
+        
+        dados = resposta.json()
+        
+        if chave_json in dados:
+            info = dados[chave_json]
+            
+            print(f"\n--- Cotação: {info.get('name', par_moeda_api)} ---")
+            print(f"Valor Atual (Compra): R$ {info.get('bid', 'N/A')}")
+            print(f"Máxima do Dia: R$ {info.get('high', 'N/A')}")
+            print(f"Mínima do Dia: R$ {info.get('low', 'N/A')}")
+            print(f"Última Atualização: {info.get('create_date', 'N/A')}")
+        else:
+            print(f"Cotação para {moeda_desejada} não encontrada na resposta da API.")
+
+    except requests.exceptions.RequestException:
+        print(f"Erro ao buscar a cotação para {moeda_desejada}. Verifique o código ou sua conexão.")
+    except (KeyError, ValueError):
+        print(f"Erro ao processar os dados da cotação para {moeda_desejada}. Resposta inesperada da API.")
+    except Exception:
+        print("Ocorreu um erro inesperado durante a consulta.")
+
+
+consultar_cotacao_moeda()
